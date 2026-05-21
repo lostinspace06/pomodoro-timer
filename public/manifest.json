@@ -1,0 +1,26 @@
+{
+  "name": "Pomodoro Ghibli",
+  "short_name": "GhibliPom",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f12",
+  "theme_color": "#60a5fa",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/maskable-icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

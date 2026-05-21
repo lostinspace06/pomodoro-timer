@@ -1,0 +1,137 @@
+@import url('https://fonts.cdnfonts.com/css/ghibli-font-free');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  button,
+  input {
+    font-family: inherit;
+  }
+
+  /* Apply glass slider style to every range input globally */
+  input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 13px;
+    height: 13px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  input[type='range']::-webkit-slider-thumb:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.25);
+  }
+
+  input[type='range']::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+  }
+
+  input[type='range']::-moz-range-track {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+}
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+:root {
+  --accent: 220 90% 60%;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Light mode overrides */
+html.light body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+html.light .glass {
+  background: rgba(0,0,0,0.04);
+}
+
+html.light input[type='range'] {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+html.light input[type='range']::-webkit-slider-thumb {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+}
+
+html.light * {
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+}
+
+body {
+  @apply bg-ghibliBG text-gray-100 antialiased;
+  font-family: 'Fredoka', 'Ghibli Font Free', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  letter-spacing: 0.01em;
+}
+
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(6px) saturate(1.05);
+}
+
+/* Glassy scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
