@@ -134,6 +134,17 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  syncHistoryToFirestore: async (sessionHistory) => {
+    const { user } = get()
+    if (!user) return
+    try {
+      const ref = doc(db, 'users', user.uid)
+      await updateDoc(ref, { sessionHistory })
+    } catch (err) {
+      console.error('Failed to sync history:', err)
+    }
+  },
+
   loadStatsFromFirestore: async () => {
     const { user } = get()
     if (!user) return null

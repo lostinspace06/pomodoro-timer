@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../store/useStore'
 import { ensureAudioUnlocked, playAlarmSound } from '../utils/audio'
 
 export default function Timer({ onSessionEnd }) {
   const [editing, setEditing] = useState(false)
   const [editValue, setEditValue] = useState('')
+  const [labelEditing, setLabelEditing] = useState(false)
+  const [labelDraft, setLabelDraft] = useState('')
   const inputRef = useRef(null)
+  const labelInputRef = useRef(null)
 
   const {
     mode,
@@ -20,6 +23,7 @@ export default function Timer({ onSessionEnd }) {
     autoStartBreak,
     autoStartFocus,
     alarmSound,
+    sessionLabel,
     toggleRunning,
     nextSession,
     setSecondsLeft,
@@ -27,7 +31,8 @@ export default function Timer({ onSessionEnd }) {
     setDurations,
     incrementRound,
     reset,
-    animationsEnabled
+    animationsEnabled,
+    setSessionLabel,
   } = useStore()
 
   const intervalRef = useRef(null)
@@ -69,7 +74,6 @@ export default function Timer({ onSessionEnd }) {
 
       if (autoSwitch) {
         setTimeout(() => {
-          // focusCount has already been incremented by incrementRound above
           const newFocusCount = useStore.getState().focusCount
           const nextMode =
             mode === 'focus'
@@ -86,6 +90,19 @@ export default function Timer({ onSessionEnd }) {
           ) {
             toggleRunning()
           }
+        }, 1400)
+      } else {
+        // No auto-switch: still reset the timer to the next logical session duration
+        // so it doesn't sit stuck at 0:00
+        setTimeout(() => {
+          const newFocusCount = useStore.getState().focusCount
+          const nextMode =
+            mode === 'focus'
+              ? newFocusCount % longAfter === 0
+                ? 'long'
+                : 'short'
+              : 'focus'
+          setMode(nextMode)
         }, 1400)
       }
     }
@@ -138,6 +155,23 @@ export default function Timer({ onSessionEnd }) {
     }
   }, [editing])
 
+  useEffect(() => {
+    if (labelEditing && labelInputRef.current) {
+      labelInputRef.current.focus()
+      labelInputRef.current.select()
+    }
+  }, [labelEditing])
+
+  const openLabelEdit = () => {
+    setLabelDraft(sessionLabel)
+    setLabelEditing(true)
+  }
+
+  const commitLabel = () => {
+    setSessionLabel(labelDraft.trim())
+    setLabelEditing(false)
+  }
+
   const parseTimeValue = (value) => {
     const input = value.trim()
     if (!input) return null
@@ -178,6 +212,7 @@ export default function Timer({ onSessionEnd }) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Mode buttons */}
       <div className="flex gap-3 mb-2">
         <button type="button" onClick={() => changeMode('focus')} className={modeButtonClass('focus')}>
           Focus
@@ -189,7 +224,67 @@ export default function Timer({ onSessionEnd }) {
           Long Break
         </button>
       </div>
-      <div className="relative">
+
+      {/* Session label chip — only in focus mode */}
+      {mode === 'focus' && (
+        <div className="flex items-center justify-center -mt-4 min-h-[28px]">
+          <AnimatePresence mode="wait">
+            {labelEditing ? (
+              <motion.input
+                key="label-input"
+                ref={labelInputRef}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.12 }}
+                value={labelDraft}
+                onChange={(e) => setLabelDraft(e.target.value)}
+                onBlur={commitLabel}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') commitLabel()
+                  if (e.key === 'Escape') setLabelEditing(false)
+                }}
+                placeholder="What are you working on?"
+                maxLength={60}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs text-white/80 placeholder:text-white/25 outline-none focus:border-white/25 transition text-center w-64"
+              />
+            ) : sessionLabel ? (
+              <motion.button
+                key="label-chip"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.12 }}
+                onClick={openLabelEdit}
+                className="group flex items-center gap-1.5 rounded-full border border-white/15 bg-white/8 px-3 py-1 text-xs text-white/70 hover:text-white hover:border-white/25 transition"
+              >
+                <span className="text-white/40"></span>
+                <span className="max-w-[200px] truncate">{sessionLabel}</span>
+                <svg className="h-3 w-3 text-white/30 group-hover:text-white/60 transition shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </motion.button>
+            ) : (
+              <motion.button
+                key="label-empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
+                onClick={openLabelEdit}
+                className="flex items-center gap-1.5 rounded-full border border-dashed border-white/15 px-3 py-1 text-xs text-white/25 hover:text-white/50 hover:border-white/25 transition"
+              >
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Add session label
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+      <div className="relative w-[260px] h-[260px]">
         {running && (
           <motion.div
             className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-400/25 blur-3xl"

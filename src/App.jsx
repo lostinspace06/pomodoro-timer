@@ -19,6 +19,17 @@ export default function App() {
   const [currentDateTime, setCurrentDateTime] = useState(new Date())
 
   const { use24h, theme } = useStore()
+  const { secondsLeft, running, mode } = useStore()
+
+  // Dynamic document title — shows timer in browser tab
+  useEffect(() => {
+    const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0')
+    const seconds = String(secondsLeft % 60).padStart(2, '0')
+    const modeLabel = mode === 'focus' ? '🍅' : mode === 'short' ? '☕' : '🌿'
+    document.title = running
+      ? `${modeLabel} ${minutes}:${seconds} - Pomodoro Timer`
+      : 'Pomodoro Timer'
+  }, [secondsLeft, running, mode])
 
   // Apply theme class to <html>
   useEffect(() => {
@@ -55,6 +66,7 @@ export default function App() {
         if (data?.stats) useStore.setState({ stats: data.stats })
         if (data?.tasks) useStore.setState({ tasks: data.tasks })
         if (data?.notes !== undefined) useStore.setState({ notes: data.notes })
+        if (data?.sessionHistory) useStore.setState({ sessionHistory: data.sessionHistory })
       })
     }
   }, [user, loadStatsFromFirestore])
@@ -96,73 +108,81 @@ export default function App() {
     <div className="min-h-screen bg-ghibliBG text-gray-100 overflow-hidden">
       <Background />
 
-      <main className="relative z-20 min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-3xl w-full flex justify-center">
+      {/* ── Top bar ── */}
+      <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between gap-2 px-3 py-3 sm:px-6 sm:py-4">
+        {/* Clock — shrinks on small screens */}
+        <div className="select-none shrink-0">
+          <div className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/5 backdrop-blur-sm px-3 py-1.5 sm:px-5 sm:py-3">
+            <div className="text-lg sm:text-3xl font-semibold text-white/90 tabular-nums leading-tight">
+              {timeString}
+            </div>
+            <div className="hidden sm:block text-xs text-white/50 mt-1 tracking-wide">
+              {dateString}
+            </div>
+          </div>
+        </div>
+
+        {/* Right side — user menu + settings */}
+        <div className="flex items-center gap-2 shrink-0">
+          <UserMenu onSignInClick={() => setAuthOpen(true)} />
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="inline-flex items-center justify-center bg-white/10 text-white p-2 sm:p-3 rounded-full border border-white/10 hover:bg-white/15 backdrop-blur-sm transition"
+            aria-label="Open settings"
+          >
+            <svg className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      {/* ── Main content ── */}
+      <main className="relative z-20 min-h-screen flex items-center justify-center px-4 pt-20 pb-20 sm:pt-24 sm:pb-24">
+        <div className="flex justify-center">
           <Timer onSessionEnd={handleSessionEnd} />
         </div>
       </main>
 
-      {/* Settings button — top right */}
-      <button
-        onClick={() => setSettingsOpen(true)}
-        className="fixed top-6 right-6 z-40 inline-flex items-center justify-center bg-white/10 text-white p-3 rounded-full border border-white/10 hover:bg-white/15 backdrop-blur-sm"
-        aria-label="Open settings"
-      >
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
+      {/* ── Bottom bar — stats ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 flex items-end justify-end px-3 py-3 sm:px-6 sm:py-4 pointer-events-none">
+        <div className="pointer-events-auto">
+          <AnimatePresence>
+            {statsOpen && (
+              <motion.div
+                className="mb-3 w-[min(320px,calc(100vw-1.5rem))]"
+                initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                transition={{ duration: 0.2 }}
+              >
+                <StatsPanel />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      {/* Date & Time — top left */}
-      <div className="fixed top-6 left-6 z-40 select-none">
-        <div className="rounded-2xl border border-white/15 bg-white/5 backdrop-blur-sm px-5 py-3">
-          <div className="text-3xl font-semibold text-white/90 tabular-nums leading-tight">
-            {timeString}
-          </div>
-          <div className="text-xs text-white/50 mt-1 tracking-wide">
-            {dateString}
-          </div>
+          <button
+            onClick={() => setStatsOpen((o) => !o)}
+            className="flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 backdrop-blur-sm px-3 py-2 sm:px-4 sm:py-2.5 hover:bg-white/10 transition ml-auto"
+          >
+            <svg className="h-4 w-4 text-white/60 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span className="text-sm text-white/70 tabular-nums hidden xs:inline sm:inline">{weekLabel}</span>
+            <span className="hidden sm:inline text-xs text-white/40">this week</span>
+            <span className="text-xs text-white/40">·</span>
+            <span className="text-sm text-white/70">{stats.streak}🔥</span>
+          </button>
         </div>
       </div>
 
-      {/* Stats widget — bottom right */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <AnimatePresence>
-          {statsOpen && (
-            <motion.div
-              className="mb-3 w-80"
-              initial={{ opacity: 0, y: 10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.97 }}
-              transition={{ duration: 0.2 }}
-            >
-              <StatsPanel />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <button
-          onClick={() => setStatsOpen((o) => !o)}
-          className="flex items-center gap-2.5 rounded-2xl border border-white/15 bg-white/5 backdrop-blur-sm px-4 py-2.5 hover:bg-white/10 transition ml-auto"
-        >
-          {/* Bar chart icon */}
-          <svg className="h-4 w-4 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10" />
-            <line x1="12" y1="20" x2="12" y2="4" />
-            <line x1="6" y1="20" x2="6" y2="14" />
-          </svg>
-          <span className="text-sm text-white/70 tabular-nums">{weekLabel} this week</span>
-          <span className="text-xs text-white/40">·</span>
-          <span className="text-sm text-white/70">{stats.streak}🔥</span>
-        </button>
-      </div>
-
       <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <TaskNotesPanel />
+      <div className="hidden lg:block"><TaskNotesPanel /></div>
       <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
-      <UserMenu onSignInClick={() => setAuthOpen(true)} />
-      <MusicPlayer />
+      <div className="hidden sm:block"><MusicPlayer /></div>
     </div>
   )
 }

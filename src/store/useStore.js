@@ -22,6 +22,17 @@ const defaultStats = {
   weekHistory: []
 }
 
+// Debounce helper for history sync
+let historySyncTimer = null
+const debouncedHistorySync = (history) => {
+  clearTimeout(historySyncTimer)
+  historySyncTimer = setTimeout(() => {
+    import('../store/useAuthStore').then(({ useAuthStore }) => {
+      useAuthStore.getState().syncHistoryToFirestore(history)
+    })
+  }, 1000)
+}
+
 const createWeekHistory = (history, date, minutes) => {
   const existing = history.find((entry) => entry.date === date)
   if (existing) {
@@ -77,6 +88,13 @@ export const useStore = create(
       customBackgrounds: [], // [{ id, name, dataUrl }]
 
       stats: defaultStats,
+
+      // Focus goal: daily target in minutes (0 = not set)
+      focusGoal: 0,
+      // Label for the current/next session
+      sessionLabel: '',
+      // History log: [{ id, mode, label, minutes, date, timestamp }]
+      sessionHistory: [],
 
       setDurations: (d) =>
         set((state) => {
@@ -142,12 +160,31 @@ export const useStore = create(
             weekHistory
           }
 
+          // Push to session history log
+          const historyEntry = {
+            id: `h-${Date.now()}`,
+            mode: state.mode,
+            label: state.sessionLabel.trim() || null,
+            minutes: sessionMinutes,
+            date: currentDate,
+            timestamp: Date.now(),
+          }
+          const sessionHistory = [historyEntry, ...state.sessionHistory].slice(0, 100)
+
           // Sync to Firestore if signed in
           import('../store/useAuthStore').then(({ useAuthStore }) => {
             useAuthStore.getState().syncStatsToFirestore(newStats)
           })
+          debouncedHistorySync(sessionHistory)
 
-          return { round: nextRound, focusCount: isFocus ? state.focusCount + 1 : state.focusCount, stats: newStats }
+          return {
+            round: nextRound,
+            focusCount: isFocus ? state.focusCount + 1 : state.focusCount,
+            stats: newStats,
+            sessionHistory,
+            // Clear label after focus session completes
+            sessionLabel: isFocus ? '' : state.sessionLabel,
+          }
         }),
 
       reset: () =>
@@ -174,6 +211,12 @@ export const useStore = create(
         }),
 
       setSetting: (key, value) => set({ [key]: value }),
+
+      setSessionLabel: (label) => set({ sessionLabel: label }),
+
+      setFocusGoal: (minutes) => set({ focusGoal: minutes }),
+
+      clearHistory: () => set({ sessionHistory: [] }),
 
       addTask: (title) =>
         set((state) => {
@@ -259,7 +302,10 @@ export const useStore = create(
         tasks: state.tasks,
         notes: state.notes,
         customBackgrounds: state.customBackgrounds,
-        stats: state.stats
+        stats: state.stats,
+        focusGoal: state.focusGoal,
+        sessionLabel: state.sessionLabel,
+        sessionHistory: state.sessionHistory,
       }),
       merge: (persistedState, currentState) => ({
         ...currentState,

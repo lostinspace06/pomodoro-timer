@@ -23,9 +23,8 @@ export default function SettingsPanel({ isOpen, onClose }) {
     durations, setDurations, setSetting,
     autoSwitch, autoStartBreak, autoStartFocus, longAfter,
     use24h, soundEnabled, alarmVolume, ambienceVolume,
-    animationsEnabled, backgroundBlur, theme,
     selectedAmbience, selectedBackground, alarmSound,
-    customBackgrounds, addCustomBackground, removeCustomBackground
+    customBackgrounds, removeCustomBackground
   } = useStore()
 
   const bgFileRef = React.useRef(null)
@@ -69,9 +68,9 @@ export default function SettingsPanel({ isOpen, onClose }) {
             onClick={onClose}
           />
 
-          {/* Panel — stronger blur + darker base for readability */}
+          {/* Panel */}
           <motion.div
-            className="fixed right-0 top-0 h-screen w-full max-w-md bg-black/40 backdrop-blur-2xl border-l border-white/15 overflow-y-auto z-50"
+            className="fixed right-0 top-0 h-screen w-full sm:max-w-md bg-black/40 backdrop-blur-2xl border-l border-white/15 overflow-y-auto z-50"
             initial={{ opacity: 0, x: 400 }}
             animate={{ opacity: 1, x: 0, transition: { duration: 0.3 } }}
             exit={{ opacity: 0, x: 400, transition: { duration: 0.2 } }}
@@ -128,87 +127,90 @@ export default function SettingsPanel({ isOpen, onClose }) {
                 </Row>
               </Section>
 
-              {/* ── Backgrounds ── */}
-              <Section title="Background">
-                <div className="grid grid-cols-2 gap-3">
-                  {backgrounds.map((bg) => (
-                    <button
-                      key={bg.id}
-                      type="button"
-                      onClick={() => setSetting('selectedBackground', bg.id)}
-                      className={`group relative overflow-hidden rounded-2xl border transition-all ${
-                        selectedBackground === bg.id
-                          ? 'border-white/40 ring-2 ring-white/20'
-                          : 'border-white/15 hover:border-white/25'
-                      }`}
-                    >
-                      <img src={bg.thumb} alt={bg.name} className="h-20 w-full object-cover" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                      <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow">
-                        {bg.name}
-                      </span>
-                    </button>
-                  ))}
+              {/* ── Display ── */}
+              <Section title="Display">
+                <ToggleSetting label="24-hour format" checked={use24h} onChange={() => setSetting('use24h', !use24h)} />
 
-                  {/* Custom backgrounds */}
-                  {customBackgrounds.map((bg) => (
-                    <div
-                      key={bg.id}
-                      className={`group relative overflow-hidden rounded-2xl border transition-all ${
-                        selectedBackground === bg.id
-                          ? 'border-white/40 ring-2 ring-white/20'
-                          : 'border-white/15 hover:border-white/25'
-                      }`}
-                    >
+                {/* Background picker */}
+                <div className="pt-1 space-y-3">
+                  <span className="text-sm text-white/70">Background</span>
+                  <div className="grid grid-cols-2 gap-3">
+                    {backgrounds.map((bg) => (
                       <button
+                        key={bg.id}
                         type="button"
                         onClick={() => setSetting('selectedBackground', bg.id)}
-                        className="w-full"
+                        className={`group relative overflow-hidden rounded-2xl border transition-all ${
+                          selectedBackground === bg.id
+                            ? 'border-white/40 ring-2 ring-white/20'
+                            : 'border-white/15 hover:border-white/25'
+                        }`}
                       >
-                        <img src={bg.dataUrl} alt={bg.name} className="h-20 w-full object-cover" />
+                        <img src={bg.thumb} alt={bg.name} className="h-20 w-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                        <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow truncate max-w-[80%]">
+                        <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow">
                           {bg.name}
                         </span>
                       </button>
-                      {/* Delete button */}
-                      <button
-                        type="button"
-                        onClick={() => removeCustomBackground(bg.id)}
-                        className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 hover:bg-rose-500/80 flex items-center justify-center text-white/70 hover:text-white transition opacity-0 group-hover:opacity-100"
-                        aria-label="Delete background"
+                    ))}
+
+                    {/* Custom backgrounds */}
+                    {customBackgrounds.map((bg) => (
+                      <div
+                        key={bg.id}
+                        className={`group relative overflow-hidden rounded-2xl border transition-all ${
+                          selectedBackground === bg.id
+                            ? 'border-white/40 ring-2 ring-white/20'
+                            : 'border-white/15 hover:border-white/25'
+                        }`}
                       >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
+                        <button
+                          type="button"
+                          onClick={() => setSetting('selectedBackground', bg.id)}
+                          className="w-full"
+                        >
+                          <img src={bg.dataUrl} alt={bg.name} className="h-20 w-full object-cover" />
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                          <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow truncate max-w-[80%]">
+                            {bg.name}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeCustomBackground(bg.id)}
+                          className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 hover:bg-rose-500/80 flex items-center justify-center text-white/70 hover:text-white transition opacity-0 group-hover:opacity-100"
+                          aria-label="Delete background"
+                        >
+                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Upload button */}
+                  <button
+                    type="button"
+                    onClick={() => bgFileRef.current?.click()}
+                    className="w-full rounded-xl border border-dashed border-white/20 bg-white/5 hover:bg-white/8 px-4 py-3 text-sm text-white/50 hover:text-white/80 transition flex items-center justify-center gap-2"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload your own
+                  </button>
+                  <input
+                    ref={bgFileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleBgUpload}
+                  />
                 </div>
-
-                {/* Upload button */}
-                <button
-                  type="button"
-                  onClick={() => bgFileRef.current?.click()}
-                  className="w-full mt-1 rounded-xl border border-dashed border-white/20 bg-white/5 hover:bg-white/8 px-4 py-3 text-sm text-white/50 hover:text-white/80 transition flex items-center justify-center gap-2"
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  Upload your own
-                </button>
-                <input
-                  ref={bgFileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleBgUpload}
-                />
               </Section>
-
-              {/* ── Audio ── */}
               <Section title="Audio">
                 <ToggleSetting
                   label="Sound enabled"
@@ -272,24 +274,6 @@ export default function SettingsPanel({ isOpen, onClose }) {
                 >
                   Test alarm sound
                 </button>
-              </Section>
-
-              {/* ── Display ── */}
-              <Section title="Display">
-                <ToggleSetting label="24-hour format"    checked={use24h}            onChange={() => setSetting('use24h', !use24h)} />
-                <ToggleSetting label="Smooth animations" checked={animationsEnabled} onChange={() => setSetting('animationsEnabled', !animationsEnabled)} />
-                <ToggleSetting
-                  label="Light mode"
-                  checked={theme === 'light'}
-                  onChange={() => setSetting('theme', theme === 'light' ? 'dark' : 'light')}
-                />
-                <SliderRow
-                  label="Background blur"
-                  value={backgroundBlur}
-                  min={0} max={60} step={2}
-                  display={`${backgroundBlur}px`}
-                  onChange={(v) => setSetting('backgroundBlur', v)}
-                />
               </Section>
 
             </div>

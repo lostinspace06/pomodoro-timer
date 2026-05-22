@@ -22,7 +22,7 @@ const SOUNDS = [
   { id: 'white-noise',   label: 'White Noise',       emoji: '⬜', group: 'Noise' },
 ]
 
-const GROUPS = ['Rhythm', 'Nature', 'Spaces', 'Noise']
+const GROUPS = ['Noise', 'Rhythm', 'Nature', 'Spaces']
 
 export default function MusicPlayer() {
   const [pickerOpen, setPickerOpen] = useState(false)

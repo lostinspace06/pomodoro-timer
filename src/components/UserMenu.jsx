@@ -10,14 +10,14 @@ export default function UserMenu({ onSignInClick }) {
     return (
       <button
         onClick={onSignInClick}
-        className="fixed top-6 right-20 z-40 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-4 py-2.5 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-3 py-2 text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white transition"
       >
-        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
           <polyline points="10 17 15 12 10 7" />
           <line x1="15" y1="12" x2="3" y2="12" />
         </svg>
-        Sign in
+        <span className="hidden sm:inline">Sign in</span>
       </button>
     )
   }
@@ -37,16 +37,16 @@ export default function UserMenu({ onSignInClick }) {
     <>
       <button
         onClick={() => setProfileOpen(true)}
-        className="fixed top-6 right-20 z-40 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-3 py-1.5 hover:bg-white/10 transition"
+        className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm px-2.5 py-1.5 hover:bg-white/10 transition"
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt="avatar" className="h-7 w-7 rounded-full object-cover" />
+          <img src={avatarUrl} alt="avatar" className="h-6 w-6 sm:h-7 sm:w-7 rounded-full object-cover" />
         ) : (
-          <div className={`h-7 w-7 rounded-full ${avatarBg} flex items-center justify-center text-xs font-bold text-white`}>
+          <div className={`h-6 w-6 sm:h-7 sm:w-7 rounded-full ${avatarBg} flex items-center justify-center text-xs font-bold text-white`}>
             {initials}
           </div>
         )}
-        <span className="text-sm text-white/80 max-w-[120px] truncate">{displayName}</span>
+        <span className="hidden sm:inline text-sm text-white/80 max-w-[100px] truncate">{displayName}</span>
       </button>
 
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
