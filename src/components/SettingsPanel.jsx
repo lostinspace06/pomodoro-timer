@@ -24,7 +24,8 @@ export default function SettingsPanel({ isOpen, onClose }) {
     autoSwitch, autoStartBreak, autoStartFocus, longAfter,
     use24h, soundEnabled, alarmVolume, ambienceVolume,
     selectedAmbience, selectedBackground, alarmSound,
-    customBackgrounds, removeCustomBackground
+    customBackgrounds, removeCustomBackground,
+    builtInBackgroundNames, renameBackground,
   } = useStore()
 
   const bgFileRef = React.useRef(null)
@@ -135,57 +136,32 @@ export default function SettingsPanel({ isOpen, onClose }) {
                 <div className="pt-1 space-y-3">
                   <span className="text-sm text-white/70">Background</span>
                   <div className="grid grid-cols-2 gap-3">
-                    {backgrounds.map((bg) => (
-                      <button
-                        key={bg.id}
-                        type="button"
-                        onClick={() => setSetting('selectedBackground', bg.id)}
-                        className={`group relative overflow-hidden rounded-2xl border transition-all ${
-                          selectedBackground === bg.id
-                            ? 'border-white/40 ring-2 ring-white/20'
-                            : 'border-white/15 hover:border-white/25'
-                        }`}
-                      >
-                        <img src={bg.thumb} alt={bg.name} className="h-20 w-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                        <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow">
-                          {bg.name}
-                        </span>
-                      </button>
-                    ))}
+                    {backgrounds.map((bg) => {
+                      const displayName = builtInBackgroundNames[bg.id] || bg.name
+                      return (
+                        <BackgroundCard
+                          key={bg.id}
+                          id={bg.id}
+                          name={displayName}
+                          thumb={bg.thumb}
+                          selected={selectedBackground === bg.id}
+                          onSelect={() => setSetting('selectedBackground', bg.id)}
+                          onRename={(name) => renameBackground(bg.id, name)}
+                        />
+                      )
+                    })}
 
-                    {/* Custom backgrounds */}
                     {customBackgrounds.map((bg) => (
-                      <div
+                      <BackgroundCard
                         key={bg.id}
-                        className={`group relative overflow-hidden rounded-2xl border transition-all ${
-                          selectedBackground === bg.id
-                            ? 'border-white/40 ring-2 ring-white/20'
-                            : 'border-white/15 hover:border-white/25'
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSetting('selectedBackground', bg.id)}
-                          className="w-full"
-                        >
-                          <img src={bg.dataUrl} alt={bg.name} className="h-20 w-full object-cover" />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                          <span className="absolute left-2.5 bottom-2 text-xs font-semibold text-white drop-shadow truncate max-w-[80%]">
-                            {bg.name}
-                          </span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeCustomBackground(bg.id)}
-                          className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 hover:bg-rose-500/80 flex items-center justify-center text-white/70 hover:text-white transition opacity-0 group-hover:opacity-100"
-                          aria-label="Delete background"
-                        >
-                          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                          </svg>
-                        </button>
-                      </div>
+                        id={bg.id}
+                        name={bg.name}
+                        thumb={bg.dataUrl}
+                        selected={selectedBackground === bg.id}
+                        onSelect={() => setSetting('selectedBackground', bg.id)}
+                        onRename={(name) => renameBackground(bg.id, name)}
+                        onDelete={() => removeCustomBackground(bg.id)}
+                      />
                     ))}
                   </div>
 
@@ -372,5 +348,91 @@ function DurationInput({ value, min, max, onCommit }) {
       onKeyDown={(e) => { if (e.key === 'Enter') { e.currentTarget.blur() } }}
       className="no-spinner w-14 rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-right text-sm text-white outline-none focus:border-white/30"
     />
+  )
+}
+
+// ── BackgroundCard ─────────────────────────────────────────────────────────────
+function BackgroundCard({ id, name, thumb, selected, onSelect, onRename, onDelete }) {
+  const [renaming, setRenaming] = useState(false)
+  const [draft, setDraft] = useState(name)
+  const inputRef = React.useRef(null)
+
+  React.useEffect(() => {
+    if (renaming && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [renaming])
+
+  const commitRename = () => {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== name) onRename(trimmed)
+    else setDraft(name)
+    setRenaming(false)
+  }
+
+  return (
+    <div
+      className={`group relative overflow-hidden rounded-2xl border transition-all ${
+        selected ? 'border-white/40 ring-2 ring-white/20' : 'border-white/15 hover:border-white/25'
+      }`}
+    >
+      {/* Thumbnail — clicking selects */}
+      <button type="button" onClick={onSelect} className="w-full block">
+        <img src={thumb} alt={name} className="h-20 w-full object-cover" />
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+      </button>
+
+      {/* Name bar — click pencil to rename */}
+      <div className="absolute bottom-0 left-0 right-0 flex items-center gap-1 px-2 py-1.5 bg-black/30">
+        {renaming ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commitRename}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commitRename()
+              if (e.key === 'Escape') { setDraft(name); setRenaming(false) }
+            }}
+            className="flex-1 min-w-0 bg-transparent text-xs text-white outline-none border-b border-white/30"
+            maxLength={30}
+          />
+        ) : (
+          <span className="flex-1 min-w-0 text-xs font-semibold text-white drop-shadow truncate">
+            {name}
+          </span>
+        )}
+
+        {/* Pencil rename button */}
+        {!renaming && (
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setDraft(name); setRenaming(true) }}
+            className="shrink-0 text-white/30 hover:text-white/80 transition opacity-0 group-hover:opacity-100"
+            aria-label="Rename"
+          >
+            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Delete button — custom only */}
+      {onDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-black/60 hover:bg-rose-500/80 flex items-center justify-center text-white/70 hover:text-white transition opacity-0 group-hover:opacity-100"
+          aria-label="Delete background"
+        >
+          <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
+    </div>
   )
 }

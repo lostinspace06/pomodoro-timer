@@ -76,7 +76,7 @@ export const useStore = create(
       animationsEnabled: true,
       backgroundBlur: 28,
       theme: 'dark',
-      selectedBackground: 'study-lofi',
+      selectedBackground: 'capy1',
       selectedAmbience: 'rain',
       alarmSound: 'chime',
 
@@ -86,6 +86,7 @@ export const useStore = create(
       ],
       notes: '',
       customBackgrounds: [], // [{ id, name, dataUrl }]
+      builtInBackgroundNames: {}, // { [id]: customName } overrides for built-in backgrounds
 
       stats: defaultStats,
 
@@ -259,6 +260,23 @@ export const useStore = create(
         debouncedTaskSync(tasks, notes)
       },
 
+      renameBackground: (id, name) =>
+        set((state) => {
+          // Check if it's a custom background
+          const isCustom = state.customBackgrounds.some((bg) => bg.id === id)
+          if (isCustom) {
+            return {
+              customBackgrounds: state.customBackgrounds.map((bg) =>
+                bg.id === id ? { ...bg, name } : bg
+              )
+            }
+          }
+          // Built-in — store name override
+          return {
+            builtInBackgroundNames: { ...state.builtInBackgroundNames, [id]: name }
+          }
+        }),
+
       addCustomBackground: (name, dataUrl) =>
         set((state) => ({
           customBackgrounds: [
@@ -302,6 +320,7 @@ export const useStore = create(
         tasks: state.tasks,
         notes: state.notes,
         customBackgrounds: state.customBackgrounds,
+        builtInBackgroundNames: state.builtInBackgroundNames,
         stats: state.stats,
         focusGoal: state.focusGoal,
         sessionLabel: state.sessionLabel,

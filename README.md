@@ -1,6 +1,6 @@
-# Pomodoro Ghibli 
+# Pomodoro Timer
 
-A cozy, feature-rich Pomodoro timer with a Ghibli-inspired aesthetic. Built with React, Vite, and Firebase — works as a PWA and runs entirely in the browser.
+A cozy, feature-rich Pomodoro timer with a bubbly-inspired aesthetic. Built with React, Vite, and Firebase — works as a PWA and runs entirely in the browser.
 
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite) ![Firebase](https://img.shields.io/badge/Firebase-10-FFCA28?logo=firebase) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3-38BFF8?logo=tailwindcss)
 
@@ -140,8 +140,8 @@ pomodoro-timer/
 
 ## Firebase Setup
 
-The app uses Firebase for auth and Firestore sync. The config in `src/firebase.js` points to the `pomodoro-ghibli` project. To use your own Firebase project:
-
+The app uses Firebase for auth and Firestore sync. The config in `src/firebase.js` points to the `pomodoro-timer` project. To use your own Firebase project:
+|i-qc e`1  q xc=-06c .p\-=
 1. Create a project at [console.firebase.google.com](https://console.firebase.google.com)
 2. Enable **Authentication** (Google + Email/Password providers)
 3. Enable **Firestore** in Native mode
