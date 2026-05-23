@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#0b1220" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#g)" />
+  <g fill="#9ca3af" opacity="0.14">
+    <rect x="60" y="300" width="680" height="90" rx="10" />
+    <rect x="80" y="320" width="320" height="40" rx="6" />
+  </g>
+  <text x="50%" y="40%" text-anchor="middle" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="28">Study Lofi (placeholder)</text>
+  <text x="50%" y="50%" text-anchor="middle" fill="#94a3b8" font-family="Inter, sans-serif" font-size="14">Place a file at /public/lofi.mp4 to enable video</text>
+</svg>
