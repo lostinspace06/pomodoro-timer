@@ -4,10 +4,10 @@ import { useStore } from '../store/useStore'
 import { startAmbient, stopAmbient, setAmbientVolume, testAlarmSound, ensureAudioUnlocked } from '../utils/audio'
 
 const backgrounds = [
-  { id: 'capy1', name: 'Capybara 1', thumb: '/backgrounds/capy1.jpg' },
-  { id: 'capy2', name: 'Capybara 2', thumb: '/backgrounds/capy2.jpg' },
-  { id: 'capy3', name: 'Capybara 3', thumb: '/backgrounds/capy3.jpg' },
-  { id: 'capy4', name: 'Capybara 4', thumb: '/backgrounds/capy4.jpg' }
+  { id: 'capy1', name: 'Capybara 1', thumb: `${import.meta.env.BASE_URL}backgrounds/capy1.jpg` },
+  { id: 'capy2', name: 'Capybara 2', thumb: `${import.meta.env.BASE_URL}backgrounds/capy2.jpg` },
+  { id: 'capy3', name: 'Capybara 3', thumb: `${import.meta.env.BASE_URL}backgrounds/capy3.jpg` },
+  { id: 'capy4', name: 'Capybara 4', thumb: `${import.meta.env.BASE_URL}backgrounds/capy4.jpg` },
 ]
 
 const AMBIENCE_OPTIONS = [

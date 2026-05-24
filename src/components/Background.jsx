@@ -7,10 +7,10 @@ const builtInStyles = {
   'study-lofi':  { gradient: 'from-slate-800 via-slate-900 to-slate-950' },
   'forest-mist': { gradient: 'from-slate-700 via-emerald-900 to-slate-950' },
   'evening-glow':{ gradient: 'from-violet-900 via-slate-900 to-slate-950' },
-  'capy1': { image: '/backgrounds/capy1.jpg' },
-  'capy2': { image: '/backgrounds/capy2.jpg' },
-  'capy3': { image: '/backgrounds/capy3.jpg' },
-  'capy4': { image: '/backgrounds/capy4.jpg' },
+  'capy1': { image: `${import.meta.env.BASE_URL}backgrounds/capy1.jpg` },
+  'capy2': { image: `${import.meta.env.BASE_URL}backgrounds/capy2.jpg` },
+  'capy3': { image: `${import.meta.env.BASE_URL}backgrounds/capy3.jpg` },
+  'capy4': { image: `${import.meta.env.BASE_URL}backgrounds/capy4.jpg` },
 }
 
 export default function Background() {

@@ -2,23 +2,25 @@ import { useStore } from '../store/useStore'
 
 // ─── Sound file map ───────────────────────────────────────────────────────────
 
+const BASE = import.meta.env.BASE_URL
+
 const SOUND_FILES = {
-  'tick-tock':     '/sounds/ticktock.mp3',
-  'metronome':     '/sounds/metronome.mp3',
-  'countdown':     '/sounds/countdown.mp3',
-  'rain':          '/sounds/rain.mp3',
-  'ocean-shore':   '/sounds/oceanshore.mp3',
-  'stream':        '/sounds/stream.mp3',
-  'wind':          '/sounds/wind.mp3',
-  'wind-crickets': '/sounds/windandcrickets.mp3',
-  'wilderness':    '/sounds/wilderness.mp3',
-  'frogs-night':   '/sounds/frogsatnight.mp3',
-  'cafe':          '/sounds/cafe.mp3',
-  'library':       '/sounds/library.mp3',
-  'classroom':     '/sounds/classroom.mp3',
-  'bonfire':       '/sounds/bonfire.mp3',
-  'brown-noise':   '/sounds/brownnoise.mp3',
-  'white-noise':   '/sounds/whitenoise.mp3',
+  'tick-tock':     `${BASE}sounds/ticktock.mp3`,
+  'metronome':     `${BASE}sounds/metronome.mp3`,
+  'countdown':     `${BASE}sounds/countdown.mp3`,
+  'rain':          `${BASE}sounds/rain.mp3`,
+  'ocean-shore':   `${BASE}sounds/oceanshore.mp3`,
+  'stream':        `${BASE}sounds/stream.mp3`,
+  'wind':          `${BASE}sounds/wind.mp3`,
+  'wind-crickets': `${BASE}sounds/windandcrickets.mp3`,
+  'wilderness':    `${BASE}sounds/wilderness.mp3`,
+  'frogs-night':   `${BASE}sounds/frogsatnight.mp3`,
+  'cafe':          `${BASE}sounds/cafe.mp3`,
+  'library':       `${BASE}sounds/library.mp3`,
+  'classroom':     `${BASE}sounds/classroom.mp3`,
+  'bonfire':       `${BASE}sounds/bonfire.mp3`,
+  'brown-noise':   `${BASE}sounds/brownnoise.mp3`,
+  'white-noise':   `${BASE}sounds/whitenoise.mp3`,
 }
 
 // ─── State ────────────────────────────────────────────────────────────────────
