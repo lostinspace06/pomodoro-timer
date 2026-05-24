@@ -174,4 +174,7 @@ The app registers a service worker (`public/sw.js`) on load and includes a `mani
 
 MIT
 
+
+okay one thing is that you gotta add secrets in your github, iykwim or else the website is gonna go poof and you'lll def blame me for that :( so yes my fellow comrades, please lmk if i need to add any other featues or if you come across a bug, luv u guys sm :)
+you see what i did there with the parentheses hehehehehehe 
 ah okay blah blah lots of stuff, anyways :3
