@@ -37,12 +37,12 @@ export default function Timer({ onSessionEnd }) {
 
   const intervalRef = useRef(null)
 
-  const buttonBase = 'rounded-full px-9 py-4 text-lg font-semibold transition border border-white/20 shadow-sm shadow-black/20 backdrop-blur-sm'
+  const buttonBase = 'rounded-full px-6 py-2.5 sm:px-9 sm:py-4 text-base sm:text-lg font-semibold transition border border-white/20 shadow-sm shadow-black/20 backdrop-blur-sm'
   const themedButton = (bgClass, textClass = 'text-white') =>
     `${buttonBase} ${bgClass} ${textClass} hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30`
 
   const modeButtonClass = (buttonMode) =>
-    `rounded-full px-7 py-3.5 text-base font-semibold transition border border-white/15 ${mode === buttonMode ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-200 hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-white/20`
+    `rounded-full px-3 py-2 sm:px-7 sm:py-3.5 text-xs sm:text-base font-semibold transition border border-white/15 ${mode === buttonMode ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-200 hover:bg-white/10'} focus:outline-none focus:ring-2 focus:ring-white/20`
 
   const changeMode = async (newMode) => {
     if (running) toggleRunning()
@@ -207,13 +207,13 @@ export default function Timer({ onSessionEnd }) {
 
   return (
     <motion.div
-      className="flex flex-col items-center gap-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-10 py-10"
+      className="flex flex-col items-center gap-4 sm:gap-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-5 py-6 sm:px-10 sm:py-10"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
     >
       {/* Mode buttons */}
-      <div className="flex gap-3 mb-2">
+      <div className="flex gap-2 sm:gap-3 mb-0 sm:mb-2">
         <button type="button" onClick={() => changeMode('focus')} className={modeButtonClass('focus')}>
           Focus
         </button>
@@ -284,15 +284,15 @@ export default function Timer({ onSessionEnd }) {
           </AnimatePresence>
         </div>
       )}
-      <div className="relative w-[260px] h-[260px]">
+      <div className="relative w-[200px] h-[200px] sm:w-[260px] sm:h-[260px]">
         {running && (
           <motion.div
-            className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-400/25 blur-3xl"
+            className="absolute left-1/2 top-1/2 h-20 w-20 sm:h-28 sm:w-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-400/25 blur-3xl"
             animate={{ scale: [0.95, 1.05, 0.95] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
           />
         )}
-        <svg width="260" height="260" viewBox="0 0 260 260" className="drop-shadow-lg">
+        <svg width="100%" height="100%" viewBox="0 0 260 260" className="drop-shadow-lg">
           <defs>
             <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor={timerGradientColors[0]} />
@@ -348,7 +348,7 @@ export default function Timer({ onSessionEnd }) {
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="text-6xl font-bold text-white"
+              className="text-4xl sm:text-6xl font-bold text-white"
             >
               {formattedTime}
             </button>
@@ -356,7 +356,7 @@ export default function Timer({ onSessionEnd }) {
         </div>
       </div>
 
-      <div className="flex gap-4 mt-6 -translate-y-2">
+      <div className="flex gap-3 mt-2 sm:mt-6 sm:-translate-y-2">
         {!running ? (
           <button
             type="button"

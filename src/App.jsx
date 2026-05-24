@@ -139,7 +139,7 @@ export default function App() {
       </header>
 
       {/* ── Main content ── */}
-      <main className="relative z-20 min-h-screen flex items-center justify-center px-4 pt-20 pb-20 sm:pt-24 sm:pb-24">
+      <main className="relative z-20 min-h-screen flex items-center justify-center px-3 pt-16 pb-16 sm:pt-24 sm:pb-24">
         <div className="flex justify-center">
           <Timer onSessionEnd={handleSessionEnd} />
         </div>
