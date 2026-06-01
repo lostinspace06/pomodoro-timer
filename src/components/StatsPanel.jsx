@@ -67,10 +67,10 @@ export default function StatsPanel() {
           >
             {/* Stat cards */}
             <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Focus Time"  value={`${Math.floor(stats.today)}m`} subtext="today" />
-              <StatCard label="Completed"   value={stats.completed}               subtext="sessions" />
-              <StatCard label="This Week"   value={weekLabel}                     subtext="total" />
-              <StatCard label="Streak"      value={`${stats.streak}🔥`}           subtext="days" />
+              <StatCard label="Focus Time"  value={formatTime(Math.floor(stats.today))} subtext="today" />
+              <StatCard label="Sessions"    value={stats.todayCompleted || 0}            subtext="today" />
+              <StatCard label="This Week"   value={weekLabel}                            subtext="total" />
+              <StatCard label="All Time"    value={stats.completed}                      subtext="sessions" />
             </div>
 
             {/* Focus goal */}

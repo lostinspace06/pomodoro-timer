@@ -15,8 +15,9 @@ const debouncedTaskSync = (tasks, notes) => {
 
 const defaultStats = {
   today: 0,
+  todayCompleted: 0,   // resets daily
   thisWeek: 0,
-  completed: 0,
+  completed: 0,        // lifetime total, never resets
   streak: 0,
   lastSessionDate: null,
   weekHistory: []
@@ -145,8 +146,12 @@ export const useStore = create(
 
           const thisWeek = getThisWeekTotal(weekHistory)
 
-          // completed counts all sessions (focus + breaks)
+          // completed counts all sessions (focus + breaks) — lifetime total
           const completed = state.stats.completed + 1
+
+          // todayCompleted resets daily
+          const todayCompletedBase = lastSessionDate === currentDate ? (state.stats.todayCompleted || 0) : 0
+          const todayCompleted = todayCompletedBase + 1
 
           // Only update lastSessionDate on focus sessions so breaks don't break streaks
           const newLastSessionDate = isFocus ? currentDate : lastSessionDate
@@ -154,6 +159,7 @@ export const useStore = create(
           const newStats = {
             ...state.stats,
             completed,
+            todayCompleted,
             today,
             thisWeek,
             streak,
@@ -212,6 +218,23 @@ export const useStore = create(
         }),
 
       setSetting: (key, value) => set({ [key]: value }),
+
+      // Call on app load — resets daily stats if it's a new day
+      checkDailyReset: () =>
+        set((state) => {
+          const currentDate = getTodayDateString()
+          const lastSessionDate = state.stats.lastSessionDate
+          if (lastSessionDate && lastSessionDate !== currentDate) {
+            return {
+              stats: {
+                ...state.stats,
+                today: 0,
+                todayCompleted: 0,
+              }
+            }
+          }
+          return {}
+        }),
 
       setSessionLabel: (label) => set({ sessionLabel: label }),
 

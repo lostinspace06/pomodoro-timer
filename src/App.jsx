@@ -20,6 +20,12 @@ export default function App() {
 
   const { use24h, theme } = useStore()
   const { secondsLeft, running, mode } = useStore()
+  const { checkDailyReset } = useStore()
+
+  // Reset daily stats if it's a new day
+  useEffect(() => {
+    checkDailyReset()
+  }, [checkDailyReset])
 
   // Dynamic document title — shows timer in browser tab
   useEffect(() => {
